@@ -7,8 +7,14 @@ require("dotenv").config();
 const extractEntities = async (message) => {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   
-  // Trying 1.5 Flash as a fallback even if not listed, as it has the most reliable free quota
-  const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash-lite", "gemini-2.0-flash"];
+  // Using modern models available for the key. 
+  // 1.5-flash often returns 404 for new projects, so we try 2.0 and 2.5/3.1 flash series first.
+  const modelsToTry = [
+    "gemini-2.0-flash", 
+    "gemini-2.0-flash-lite", 
+    "gemini-2.5-flash-lite",
+    "gemini-3.1-flash-lite"
+  ];
   let lastError = null;
 
   for (const modelName of modelsToTry) {
@@ -73,6 +79,12 @@ User Message: "${message}"
       }
       throw err;
     }
+  }
+
+  if (lastError.message.includes("limit: 0")) {
+    throw new Error(`Gemini AI Error: Your API key is valid, but the Google Project has ZERO quota allocated (limit: 0). 
+    This usually happens with brand-new projects. 
+    SOLUTION: Please use the API Key from your other 'working' app, or link a billing account to this project in Google AI Studio.`);
   }
 
   throw new Error(`Gemini AI Error: ${lastError.message}`);
