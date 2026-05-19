@@ -23,6 +23,22 @@ const applyHybridGuardrails = (output, message) => {
   else if (msgLower.includes("painter") || msgLower.includes("rang") || msgLower.includes("paint") || msgLower.includes("deewar")) {
     output.service_type = "Painter";
   }
+  // Guardrail 5: Force House Maid classification
+  else if (msgLower.includes("maid") || msgLower.includes("kaam wali") || msgLower.includes("masi") || msgLower.includes("safai") || msgLower.includes("cleaning")) {
+    output.service_type = "House Maid";
+  }
+  // Guardrail 6: Force Driver classification
+  else if (msgLower.includes("driver") || msgLower.includes("gaari wala") || msgLower.includes("chala")) {
+    output.service_type = "Driver";
+  }
+  // Guardrail 7: Force Gardener classification
+  else if (msgLower.includes("gardener") || msgLower.includes("mali") || msgLower.includes("poday") || msgLower.includes("lawn")) {
+    output.service_type = "Gardener";
+  }
+  // Guardrail 8: Force Cook classification
+  else if (msgLower.includes("cook") || msgLower.includes("bawarchi") || msgLower.includes("khana") || msgLower.includes("roti")) {
+    output.service_type = "Cook";
+  }
 
   return output;
 };
@@ -61,6 +77,14 @@ const getFallbackNER = (message) => {
     service_type = "Carpenter";
   } else if (msgLower.includes("tutor") || msgLower.includes("ustad") || msgLower.includes("tuition")) {
     service_type = "Tutor";
+  } else if (msgLower.includes("maid") || msgLower.includes("kaam wali") || msgLower.includes("masi") || msgLower.includes("safai")) {
+    service_type = "House Maid";
+  } else if (msgLower.includes("driver") || msgLower.includes("gaari wala")) {
+    service_type = "Driver";
+  } else if (msgLower.includes("gardener") || msgLower.includes("mali") || msgLower.includes("poday")) {
+    service_type = "Gardener";
+  } else if (msgLower.includes("cook") || msgLower.includes("bawarchi") || msgLower.includes("khana")) {
+    service_type = "Cook";
   }
 
   // Match Location
@@ -170,7 +194,8 @@ Extract from the user message:
   (bijli wala=Electrician, AC wala=AC Technician, 
    nalka wala=Plumber, rang wala=Painter, 
    badhai=Carpenter, ustad=Tutor, 
-   kaam wali=House Maid, mali=Gardener, bawarchi=Cook)
+   kaam wali=House Maid, driver=Driver, 
+   mali=Gardener, bawarchi=Cook)
 - location: area name as mentioned (e.g. G-13, F-7, G-11 etc.)
 - time_raw: exactly as user said
 - time_normalized: convert to English
